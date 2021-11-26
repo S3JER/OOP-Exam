@@ -9,7 +9,7 @@ namespace OOP_Eksamen
         private IStregsystemUI _ui;
         private IStregsystem _stregsystem;
 
-        Dictionary<string, Action> _adminCommands = new Dictionary<string, Action>();
+        Dictionary<string, Action<string>> _adminCommands = new Dictionary<string, Action<string>>();
 
         public StregsystemController(IStregsystemUI ui, IStregsystem stregsystem)
         {
@@ -45,8 +45,8 @@ namespace OOP_Eksamen
 
 
 
-            _adminCommands.Add(":q", () => _ui.Close()); ;
-            _adminCommands.Add(":Activeate", () => _stregsystem.GetProductByID());
+            _adminCommands.Add(":q", (s) => _ui.Close());
+            _adminCommands.Add(":Activeate", (commandParts[1]) => _stregsystem.GetProductByID(Int32.Parse(commandParts[1])));
 
 
 
@@ -57,16 +57,9 @@ namespace OOP_Eksamen
                 case ":q":
                     _ui.Close();
                     break;
-                case ":activate":
-                    
+                case "print":
+                    InputUsersFromFile();
                     break;
-                case ":deactivate":
-                    break;
-                case ":crediton":
-                    break;
-                case ":creditoff":
-                    break;
-                case ":addcredits":
                 default:
                     break;
             }
@@ -78,9 +71,15 @@ namespace OOP_Eksamen
             string sFile = Path.Combine(sCurrentDirectory, path);
             string[] lines = File.ReadAllLines(sFile);
             string[] line;
-            for (int i = 0; i < lines.Length;i++)
+            List<User> userList = new List<User>();
+            for (int i = 1; i < lines.Length; i++)
             {
-
+                line = lines[i].Split(',');
+                userList.Add(new User(line[3], line[1], line[2], line[5], Decimal.Parse(line[4]), Int32.Parse(line[0])));
+            }
+            foreach (var item in userList)
+            {
+                Console.WriteLine(item.ToString());
             }
         }
     }

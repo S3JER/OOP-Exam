@@ -4,7 +4,7 @@ namespace OOP_Eksamen
 {
     public class User : IComparable
     {
-        public User(string username, string firstname, string lastname, string email, int balance, int id)
+        public User(string username, string firstname, string lastname, string email, decimal balance, int id)
         {
             Username = username;
             Firstname = firstname;
