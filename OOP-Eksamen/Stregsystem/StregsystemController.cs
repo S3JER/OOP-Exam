@@ -45,9 +45,9 @@ namespace OOP_Eksamen
 
 
 
-            _adminCommands.Add(":q", (s) => _ui.Close());
+          /*  _adminCommands.Add(":q", (s) => _ui.Close());
             _adminCommands.Add(":Activeate", (commandParts[1]) => _stregsystem.GetProductByID(Int32.Parse(commandParts[1])));
-
+*/
 
 
 
@@ -57,13 +57,20 @@ namespace OOP_Eksamen
                 case ":q":
                     _ui.Close();
                     break;
-                case "print":
+                case "printUser":
                     InputUsersFromFile();
+                    break;
+                case "printProduct":
+                    InputProductFromFile();
                     break;
                 default:
                     break;
             }
         }
+
+        /// <summary>
+        /// Constructs all the users in the system from the users.csv file.
+        /// </summary>
         public void InputUsersFromFile()
         {
             string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -81,6 +88,55 @@ namespace OOP_Eksamen
             {
                 Console.WriteLine(item.ToString());
             }
+        }
+
+        /// <summary>
+        /// Constructs all the products in the system from the product.csv file.
+        /// </summary>
+        public void InputProductFromFile()
+        {
+            string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string path = @"..\..\..\LogFiles\products.csv";
+            string sFile = Path.Combine(sCurrentDirectory, path);
+            string[] lines = File.ReadAllLines(sFile);
+            string[] line;
+            List<Product> productList = new List<Product>();
+            for (int i = 1; i < lines.Length; i++)
+            {
+                line = lines[i].Split(';');
+                if (line.Length == 4)
+                {
+                    productList.Add(new Product(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false));
+                }
+                else if (line.Length == 5)
+                {
+                    productList.Add(new SeasonalProduct(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false, DateTime.Now.ToString("yyyy/MM/dd HH:mm"), line[4]));
+                }
+            }
+            foreach (var item in productList)
+            {
+                Console.WriteLine(item.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Checks if the string value is equal to 1, if so return true, else false.
+        /// </summary>
+        /// <param name="value">The string.</param>
+        /// <returns></returns>
+        private bool CheckForTrueOrFalse(string value)
+        {
+            return Int32.Parse(value) == 1 ? true : false;
+        }
+
+        /// <summary>
+        /// Replaces different html tags from a string with an empty string.
+        /// </summary>
+        /// <param name="value">The string.</param>
+        /// <returns></returns>
+        private string RemoveHtmlTags(string value)
+        {
+            return value.Replace("<h1>", "").Replace("<h2>", "").Replace("<h3>", "").Replace("<b>", "").Replace("</h1>", "").Replace("</h2>", "").Replace("</h3>", "").Replace("</b>", "");
         }
     }
 }
