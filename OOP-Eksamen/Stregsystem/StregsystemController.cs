@@ -124,10 +124,7 @@ namespace OOP_Eksamen
         /// </summary>
         /// <param name="value">The string.</param>
         /// <returns></returns>
-        private bool CheckForTrueOrFalse(string value)
-        {
-            return Int32.Parse(value) == 1 ? true : false;
-        }
+        private bool CheckForTrueOrFalse(string value) =>Int32.Parse(value) == 1 ? true : false;
 
         /// <summary>
         /// Replaces different html tags from a string with an empty string.
