@@ -32,12 +32,12 @@ namespace OOP_Eksamen
 
         public void DisplayInsufficientCash(User user, Product product)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"{user.Username} do not have sufficent enough stregdollers for {product.Name}");
         }
 
         public void DisplayProductNotFound(string product)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"The product: {product} do not exist.");
         }
 
         public void DisplayTooManyArgumentsError(string command)
@@ -47,17 +47,18 @@ namespace OOP_Eksamen
 
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"{transaction.User} {transaction.Product.Name}");
         }
 
         public void DisplayUserBuysProduct(int count, BuyTransaction transaction)
         {
-            throw new NotImplementedException();
+            decimal value = transaction.Amount*(decimal)count;
+            Console.WriteLine($"{transaction.User} {transaction.Product.Name} {count}");
         }
 
         public void DisplayUserInfo(User user)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"{user.Firstname} {user.Lastname} {user.Email} {user.Balance}");
         }
 
         public void DisplayUserNotFound(string username)
