@@ -12,8 +12,8 @@
         void Close(); 
         void DisplayInsufficientCash(User user, Product product); 
         void DisplayGeneralError(string errorString); 
-        void Start(); 
-        event StregsystemEvent CommandEntered;
+        void Start();
+        event StregsystemEvent CommandEvent;
         public delegate void StregsystemEvent(string inputstring);
     }
 }

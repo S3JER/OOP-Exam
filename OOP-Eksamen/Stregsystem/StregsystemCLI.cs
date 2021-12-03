@@ -12,7 +12,7 @@ namespace OOP_Eksamen
             this.stregsystem = stregsystem;
         }
 
-        public event IStregsystemUI.StregsystemEvent CommandEntered;
+        public event IStregsystemUI.StregsystemEvent CommandEvent;
         public delegate void StregsystemEvent(string inputstring);
 
         public void Close()
@@ -73,9 +73,8 @@ namespace OOP_Eksamen
             while (Running)
             {
                     string command = Console.ReadLine();
-                    CommandEntered.Invoke(command);
+                CommandEvent.Invoke(command);
             }
         }
-        //public event StregsystemEvent CommandEvent;
     }
 }

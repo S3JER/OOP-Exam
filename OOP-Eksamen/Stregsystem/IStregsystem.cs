@@ -10,8 +10,10 @@ namespace OOP_Eksamen
     {
         void AddProductToList(Product product);
         void AddUserToList(User user);
+        void AddTransaction(Transaction transaction);
+        public List<Transaction> ReturnTransactionList();
         IEnumerable<Product> ActiveProducts { get; }
-        InsertCashTransaction AddCreditsToAccount(User user, int amount);
+        InsertCashTransaction AddCreditsToAccount(User user, Decimal amount);
         BuyTransaction BuyProduct(User user, Product product);
         Product GetProductByID(int id);
         IEnumerable<Transaction> GetTransactions(User user, int count);

@@ -18,16 +18,17 @@ namespace OOP_Eksamen
         {
             _ui = ui;
             _stregsystem = stregsystem;
-            ui.CommandEntered += ParseCommand;
+            ui.CommandEvent += ParseCommand;
             InputUsersFromFile();
             InputProductFromFile();
+            InputTransactionToFile();
 
             _adminCommands.Add(":quit", (s) => _ui.Close());
             _adminCommands.Add(":activate", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).Active = true);
             _adminCommands.Add(":deactivate", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).Active = false);
             _adminCommands.Add(":crediton", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).CanBeBoughtOnCredit = true);
             _adminCommands.Add(":creditoff", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).CanBeBoughtOnCredit = false);
-            _adminCommands.Add(":addcredits", (s) => _stregsystem.GetUserByUsername(s[1]).Balance += Decimal.Parse(s[2]));
+            _adminCommands.Add(":addcredits", (s) => _stregsystem.AddCreditsToAccount(_stregsystem.GetUserByUsername(s[1]), Decimal.Parse(s[2])));
         }
         public void ParseCommand(string command)
         {
@@ -146,6 +147,20 @@ namespace OOP_Eksamen
                     _stregsystem.AddProductToList(new SeasonalProduct(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false, DateTime.Now.ToString("yyyy/MM/dd HH:mm"), line[4]));
                 }
             }
+        }
+
+        public void InputTransactionToFile()
+        {
+            string path = @"..\..\..\LogFiles\transactions.csv";
+            string[] lines = File.ReadAllLines(path);
+            _stregsystem.ReturnTransactionList();
+            int i = 1;
+            foreach (Transaction transaction in _stregsystem.ReturnTransactionList())
+            {
+                lines[i] = transaction.ToString();
+                i++;
+            }
+            File.WriteAllLines(path, lines);
         }
 
         /// <summary>
