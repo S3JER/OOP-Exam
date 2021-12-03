@@ -47,6 +47,7 @@ namespace OOP_Eksamen
 
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
+            transaction.Execute();
             Console.WriteLine($"{transaction.User} {transaction.Product.Name}");
         }
 
@@ -71,10 +72,10 @@ namespace OOP_Eksamen
             Running = true;
             while (Running)
             {
-                string command = Console.ReadLine();
-                CommandEntered.Invoke(command);
+                    string command = Console.ReadLine();
+                    CommandEntered.Invoke(command);
             }
         }
-        public event StregsystemEvent CommandEvent;
+        //public event StregsystemEvent CommandEvent;
     }
 }

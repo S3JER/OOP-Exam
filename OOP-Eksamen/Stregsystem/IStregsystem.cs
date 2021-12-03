@@ -8,6 +8,8 @@ namespace OOP_Eksamen
 {
     interface IStregsystem
     {
+        void AddProductToList(Product product);
+        void AddUserToList(User user);
         IEnumerable<Product> ActiveProducts { get; }
         InsertCashTransaction AddCreditsToAccount(User user, int amount);
         BuyTransaction BuyProduct(User user, Product product);

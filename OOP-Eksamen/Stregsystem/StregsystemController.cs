@@ -9,62 +9,101 @@ namespace OOP_Eksamen
         private IStregsystemUI _ui;
         private IStregsystem _stregsystem;
 
-        Dictionary<string, Action<string>> _adminCommands = new Dictionary<string, Action<string>>();
+        Dictionary<string, Action<string[]>> _adminCommands = new Dictionary<string, Action<string[]>>();
+        Dictionary<string, Action<string[]>> _usereCommand = new Dictionary<string, Action<string[]>>();
+
+
 
         public StregsystemController(IStregsystemUI ui, IStregsystem stregsystem)
         {
             _ui = ui;
             _stregsystem = stregsystem;
             ui.CommandEntered += ParseCommand;
-           
+            InputUsersFromFile();
+            InputProductFromFile();
+
+            _adminCommands.Add(":quit", (s) => _ui.Close());
+            _adminCommands.Add(":activate", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).Active = true);
+            _adminCommands.Add(":deactivate", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).Active = false);
+            _adminCommands.Add(":crediton", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).CanBeBoughtOnCredit = true);
+            _adminCommands.Add(":creditoff", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).CanBeBoughtOnCredit = false);
+            _adminCommands.Add(":addcredits", (s) => _stregsystem.GetUserByUsername(s[1]).Balance += Decimal.Parse(s[2]));
         }
         public void ParseCommand(string command)
         {
             string[] commandParts = command.Split(' ');
-
-            bool isNumber = false;
-            if (commandParts.Length > 1)
+            Action<string[]> outPut;
+            if (_adminCommands.TryGetValue(commandParts[0], out outPut))
             {
-                for (int i = 0; i < commandParts[1].Length; i++)
+                try
                 {
-                    if (char.IsDigit(commandParts[1][i]))
-                    {
-                        isNumber = true;
-                    }
-                    if (char.IsLetter(commandParts[1][i]))
-                    {
-                        isNumber = false;
-                        break;
-                    }
+                    outPut.Invoke(commandParts);
+                }
+                catch (UserNotFoundException)
+                {
+                    _ui.DisplayUserNotFound(commandParts[1]);
+                }
+                catch (ProductNotFoundException)
+                {
+                    _ui.DisplayProductNotFound(commandParts[1]);
+                }
+                catch (InsufficientCreditsException)
+                {
+                    User user = _stregsystem.GetUserByUsername(commandParts[0]);
+                    Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
+                    _ui.DisplayInsufficientCash(user, product);
                 }
             }
-            if (isNumber)
+            else
             {
-                Console.WriteLine($"{commandParts[1]}");
-            }
+                try
+                {
+                    if (commandParts.Length == 1)
+                    {
+                        User user = _stregsystem.GetUserByUsername(commandParts[0]);
+                        _ui.DisplayUserInfo(user);
+                    }
 
-
-
-          /*  _adminCommands.Add(":q", (s) => _ui.Close());
-            _adminCommands.Add(":Activeate", (commandParts[1]) => _stregsystem.GetProductByID(Int32.Parse(commandParts[1])));
-*/
-
-
-
-
-            switch (commandParts[0])
-            {
-                case ":q":
-                    _ui.Close();
-                    break;
-                case "printUser":
-                    InputUsersFromFile();
-                    break;
-                case "printProduct":
-                    InputProductFromFile();
-                    break;
-                default:
-                    break;
+                    else if (commandParts.Length == 2)
+                    {
+                        User user = _stregsystem.GetUserByUsername(commandParts[0]);
+                        Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
+                        if (product.Active)
+                        {
+                            _ui.DisplayUserBuysProduct(_stregsystem.BuyProduct(user, product));
+                        }
+                    }
+                    else if (commandParts.Length == 3)
+                    {
+                        int count = Int32.Parse(commandParts[2]);
+                        if (count > 0)
+                        {
+                            User user = _stregsystem.GetUserByUsername(commandParts[0]);
+                            Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
+                            if (product.Active)
+                            {
+                                for (int i = 1; i <= count; i++)
+                                {
+                                    _ui.DisplayUserBuysProduct(_stregsystem.BuyProduct(user, product));
+                                }
+                            }
+                        }
+                    }
+                }
+                catch(UserNotFoundException)
+                {
+                    _ui.DisplayUserNotFound(commandParts[0]);
+                }
+                catch (ProductNotFoundException)
+                {
+                    _ui.DisplayProductNotFound(commandParts[1]);
+                }
+                catch (InsufficientCreditsException)
+                {
+                    User user = _stregsystem.GetUserByUsername(commandParts[0]);
+                    Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
+                    _ui.DisplayInsufficientCash(user, product);
+                }
             }
         }
 
@@ -78,15 +117,10 @@ namespace OOP_Eksamen
             string sFile = Path.Combine(sCurrentDirectory, path);
             string[] lines = File.ReadAllLines(sFile);
             string[] line;
-            List<User> userList = new List<User>();
             for (int i = 1; i < lines.Length; i++)
             {
                 line = lines[i].Split(',');
-                userList.Add(new User(line[3], line[1], line[2], line[5], Decimal.Parse(line[4]), Int32.Parse(line[0])));
-            }
-            foreach (var item in userList)
-            {
-                Console.WriteLine(item.ToString());
+                _stregsystem.AddUserToList(new User(line[3], line[1], line[2], line[5], Decimal.Parse(line[4]), Int32.Parse(line[0])));
             }
         }
 
@@ -100,22 +134,17 @@ namespace OOP_Eksamen
             string sFile = Path.Combine(sCurrentDirectory, path);
             string[] lines = File.ReadAllLines(sFile);
             string[] line;
-            List<Product> productList = new List<Product>();
             for (int i = 1; i < lines.Length; i++)
             {
                 line = lines[i].Split(';');
                 if (line.Length == 4)
                 {
-                    productList.Add(new Product(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false));
+                    _stregsystem.AddProductToList(new Product(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false));
                 }
                 else if (line.Length == 5)
                 {
-                    productList.Add(new SeasonalProduct(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false, DateTime.Now.ToString("yyyy/MM/dd HH:mm"), line[4]));
+                    _stregsystem.AddProductToList(new SeasonalProduct(Int32.Parse(line[0]), RemoveHtmlTags(line[1]), Decimal.Parse(line[2]), CheckForTrueOrFalse(line[3]), false, DateTime.Now.ToString("yyyy/MM/dd HH:mm"), line[4]));
                 }
-            }
-            foreach (var item in productList)
-            {
-                Console.WriteLine(item.ToString());
             }
         }
 
@@ -124,7 +153,7 @@ namespace OOP_Eksamen
         /// </summary>
         /// <param name="value">The string.</param>
         /// <returns></returns>
-        private bool CheckForTrueOrFalse(string value) =>Int32.Parse(value) == 1 ? true : false;
+        private bool CheckForTrueOrFalse(string value) => Int32.Parse(value) == 1 ? true : false;
 
         /// <summary>
         /// Replaces different html tags from a string with an empty string.

@@ -9,7 +9,8 @@
         void DisplayAdminCommandNotFoundMessage(string adminCommand); 
         void DisplayUserBuysProduct(BuyTransaction transaction); 
         void DisplayUserBuysProduct(int count, BuyTransaction transaction); 
-        void Close(); void DisplayInsufficientCash(User user, Product product); 
+        void Close(); 
+        void DisplayInsufficientCash(User user, Product product); 
         void DisplayGeneralError(string errorString); 
         void Start(); 
         event StregsystemEvent CommandEntered;
