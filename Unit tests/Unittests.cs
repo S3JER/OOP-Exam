@@ -146,7 +146,6 @@ namespace Unit_tests
             Assert.True(user.Balance < balance);
             Assert.Throws<InsufficientCreditsException>(() => buyTransaction2.Execute());
             Assert.True(user3.Balance < balance3);
-
         }
         [Fact]
         public void Check_InsertCashTransaction_Constructor_Test()

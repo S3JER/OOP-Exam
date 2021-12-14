@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace OOP_Eksamen
 {
@@ -42,6 +40,7 @@ namespace OOP_Eksamen
             _adminCommands.Add(":creditoff", (s) => _stregsystem.GetProductByID(Int32.Parse(s[1])).CanBeBoughtOnCredit = false);
             _adminCommands.Add(":addcredits", (s) => _stregsystem.AddCreditsToAccount(_stregsystem.GetUserByUsername(s[1]), Decimal.Parse(s[2])));
         }
+
         /// <summary>
         /// The different commands that CommandEvent method calls
         /// </summary>
@@ -52,52 +51,52 @@ namespace OOP_Eksamen
             {
                 string[] commandParts = command.Split(' ');
                 Action<string[]> outPut;
-                if (_adminCommands.TryGetValue(commandParts[0], out outPut))
+                if (commandParts[0].Contains(":"))
                 {
-                    outPut.Invoke(commandParts);
-                }
-                else
-                {
-                    if (commandParts.Length == 1 && !commandParts[0].Contains(":"))
+                    if (_adminCommands.TryGetValue(commandParts[0], out outPut))
                     {
-                        User user = _stregsystem.GetUserByUsername(commandParts[0]);
-                        _ui.DisplayUserInfo(user);
-                    }
-
-                    else if (commandParts.Length == 2)
-                    {
-                        User user = _stregsystem.GetUserByUsername(commandParts[0]);
-                        Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
-                        BuyTransaction transaction = _stregsystem.BuyProduct(user, product);
-                        _ui.DisplayUserBuysProduct(transaction);
-                    }
-                    else if (commandParts.Length == 3)
-                    {
-                        int count = Int32.Parse(commandParts[2]);
-                        if (count > 0)
-                        {
-                            User user = _stregsystem.GetUserByUsername(commandParts[0]);
-                            Product product = _stregsystem.GetProductByID(Int32.Parse(commandParts[1]));
-                            List<BuyTransaction> transactions = new List<BuyTransaction>();
-                            for (int i = 0; i < count; i++)
-                            {
-                                BuyTransaction transaction = _stregsystem.BuyProduct(user, product);
-                                transactions.Add(transaction);
-                            }
-                            _ui.DisplayUserBuysProduct(count, transactions);
-                        }
-                        else
-                        {
-                            _ui.DisplayGeneralError("You can't buy 0 times");
-                        }
-                    }
-                    else if (commandParts.Length > 3)
-                    {
-                        _ui.DisplayTooManyArgumentsError(string.Concat(commandParts.Aggregate((prev, current) => prev + " " + current)));
+                        outPut.Invoke(commandParts);
                     }
                     else
                     {
-                        _ui.DisplayAdminCommandNotFoundMessage(commandParts[0]);
+                        throw new AdminCommandDoNotExistExecption(commandParts[0]);
+                    }
+                }
+                else
+                {
+                    switch (commandParts.Length)
+                    {
+                        case 1:
+                            User user1 = _stregsystem.GetUserByUsername(commandParts[0]);
+                            _ui.DisplayUserInfo(user1);
+                            break;
+                        case 2:
+                            User user2 = _stregsystem.GetUserByUsername(commandParts[0]);
+                            Product product2 = _stregsystem.GetProductByID(ValidateString(commandParts[1]));
+                            BuyTransaction transaction2 = _stregsystem.BuyProduct(user2, product2);
+                            _ui.DisplayUserBuysProduct(transaction2);
+                            break;
+                        case 3:
+                            int count = ValidateString(commandParts[2]);
+                            if (count > 0)
+                            {
+                                User user3 = _stregsystem.GetUserByUsername(commandParts[0]);
+                                Product product3 = _stregsystem.GetProductByID(ValidateString(commandParts[1]));
+                                List<BuyTransaction> transactions3 = new List<BuyTransaction>();
+                                for (int i = 0; i < count; i++)
+                                {
+                                    BuyTransaction transaction3 = _stregsystem.BuyProduct(user3, product3);
+                                    transactions3.Add(transaction3);
+                                }
+                                _ui.DisplayUserBuysProduct(count, transactions3);
+                            }
+                            else
+                            {
+                                _ui.DisplayGeneralError("You can't buy 0 times");
+                            }
+                            break;
+                        default:
+                            throw new TooManyArgumentsException(command);
                     }
                 }
             }
@@ -133,10 +132,34 @@ namespace OOP_Eksamen
             {
                 _ui.DisplayGeneralError("The Id of can't be: " + e.id.ToString());
             }
-            catch (NullReferenceException e)
+            catch (TooManyArgumentsException e)
             {
-                _ui.DisplayGeneralError(e.Message);
+                _ui.DisplayTooManyArgumentsError(e.Message);
             }
+            catch (AdminCommandDoNotExistExecption e)
+            {
+                _ui.DisplayAdminCommandNotFoundMessage(e.Message);
+            }
+            //catch (FormatException)
+            //{
+            //    _ui.DisplayGeneralError("Something went wrong, try again");
+            //}
+        }
+        private int ValidateString(string value)
+        {
+            if (value != null && value != "")
+            {
+                string usableChars = "0123456789";
+                foreach (char c in value)
+                {
+                    if (!usableChars.Contains(c))
+                    {
+                        throw new ProductNotFoundException(value);
+                    }
+                }
+                return Int32.Parse(value);
+            }
+            throw new ArgumentNullException();
         }
     }
 }

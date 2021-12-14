@@ -24,7 +24,7 @@ namespace OOP_Eksamen
 
         public void DisplayAdminCommandNotFoundMessage(string adminCommand)
         {
-            Console.WriteLine($"The command {adminCommand} do not exist");
+            Console.WriteLine($"The admincommand {adminCommand} do not exist");
         }
 
         public void DisplayGeneralError(string errorString)

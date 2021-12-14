@@ -83,6 +83,10 @@ namespace OOP_Eksamen
             string path = @"..\..\..\LogFiles\transactions.csv";
             return File.ReadAllLines(path).Length;
         }
+        /// <summary>
+        /// Read all the transactions from the logfile.
+        /// </summary>
+        /// <returns>A list with all the transactions made.</returns>
         private List<Transaction> TransactionList()
         {
             List <Transaction> transactions = new List <Transaction>();
@@ -91,7 +95,7 @@ namespace OOP_Eksamen
             string[] line;
             for (int i = 1; i < lines.Length; i++)
             {
-                line = lines[i].Split(',');
+                line = lines[i].Split(';').ToArray();
                 if(line.Length == 5)
                 {
                     transactions.Add(new BuyTransaction(Int32.Parse(line[0]), GetUserByUsername(line[2]), Int32.Parse(line[3]), GetProductByID(Int32.Parse(line[4])), line[1]));

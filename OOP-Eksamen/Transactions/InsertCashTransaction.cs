@@ -10,7 +10,7 @@ namespace OOP_Eksamen
         }
         public override string ToString()
         {
-            return $"{Id},{Date},{User.Username},{Amount}";
+            return $"{Id};{Date};{User.Username};{Amount}";
         }
         public override void Execute()
         {
