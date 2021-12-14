@@ -10,12 +10,6 @@ namespace OOP_Eksamen
 
         private Dictionary<string, Action<string[]>> _adminCommands = new Dictionary<string, Action<string[]>>();
 
-
-        /// <summary>
-        /// Handles the stregsystem.
-        /// </summary>
-        /// <param name="ui">A IStregsystemUI type.</param>
-        /// <param name="stregsystem">A IStregsystem type.</param>
         public StregsystemController(IStregsystemUI ui, IStregsystem stregsystem)
         {
             _ui = ui;
@@ -41,10 +35,6 @@ namespace OOP_Eksamen
             _adminCommands.Add(":addcredits", (s) => _stregsystem.AddCreditsToAccount(_stregsystem.GetUserByUsername(s[1]), Decimal.Parse(s[2])));
         }
 
-        /// <summary>
-        /// The different commands that CommandEvent method calls
-        /// </summary>
-        /// <param name="command"></param>
         public void ParseCommand(string command)
         {
             try
@@ -92,7 +82,7 @@ namespace OOP_Eksamen
                             }
                             else
                             {
-                                _ui.DisplayGeneralError("You can't buy 0 times");
+                                _ui.DisplayGeneralError($"You can't buy {count} times");
                             }
                             break;
                         default:
@@ -140,10 +130,10 @@ namespace OOP_Eksamen
             {
                 _ui.DisplayAdminCommandNotFoundMessage(e.Message);
             }
-            //catch (FormatException)
-            //{
-            //    _ui.DisplayGeneralError("Something went wrong, try again");
-            //}
+            catch (ProductIdNotIntException e)
+            {
+                _ui.DisplayGeneralError($"{e.Message} is not a valid positive number.");
+            }
         }
         private int ValidateString(string value)
         {
@@ -154,7 +144,7 @@ namespace OOP_Eksamen
                 {
                     if (!usableChars.Contains(c))
                     {
-                        throw new ProductNotFoundException(value);
+                        throw new ProductIdNotIntException(value);
                     }
                 }
                 return Int32.Parse(value);

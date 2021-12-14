@@ -63,11 +63,17 @@ namespace OOP_Eksamen
         public void DisplayUserInfo(User user)
         {
             List<Transaction> transactions = stregsystem.GetTransactions(user, 5);
+            Console.WriteLine("Your last 5 transactions:");
             foreach (Transaction transaction in transactions)
             {
-                Console.WriteLine(transaction);
+                Console.WriteLine(" * " + transaction);
             }
-            Console.WriteLine(user.ToString() + $" {user.Balance}");
+            Console.WriteLine();
+            if(user.Balance < 50)
+            {
+                Console.WriteLine("Your balance are under 50 DKK.");
+            }
+            Console.WriteLine("Your information: " + user + $" balance:{user.Balance}");
         }
 
         public void DisplayUserNotFound(string username)
@@ -94,6 +100,7 @@ namespace OOP_Eksamen
 
         private void CreateTable()
         {
+            Console.WriteLine("You can buy with two different methods: ");
             Console.WriteLine("| Id  |               Product                  | Price | ");
             CreateLine();
             foreach (Product product in stregsystem.ActiveProducts)

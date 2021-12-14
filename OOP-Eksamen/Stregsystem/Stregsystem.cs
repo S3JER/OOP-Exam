@@ -78,45 +78,13 @@ namespace OOP_Eksamen
             }
             throw new NoUsersFoundException();
         }
+
         private int FindNewId()
         {
             string path = @"..\..\..\LogFiles\transactions.csv";
             return File.ReadAllLines(path).Length;
         }
-        /// <summary>
-        /// Read all the transactions from the logfile.
-        /// </summary>
-        /// <returns>A list with all the transactions made.</returns>
-        private List<Transaction> TransactionList()
-        {
-            List <Transaction> transactions = new List <Transaction>();
-            string path = @"..\..\..\LogFiles\transactions.csv";
-            string[] lines = File.ReadAllLines(path);
-            string[] line;
-            for (int i = 1; i < lines.Length; i++)
-            {
-                line = lines[i].Split(';').ToArray();
-                if(line.Length == 5)
-                {
-                    transactions.Add(new BuyTransaction(Int32.Parse(line[0]), GetUserByUsername(line[2]), Int32.Parse(line[3]), GetProductByID(Int32.Parse(line[4])), line[1]));
-                }
-                else if(line.Length == 4)
-                {
-                    transactions.Add(new InsertCashTransaction(Int32.Parse(line[0]), GetUserByUsername(line[2]), Int32.Parse(line[3]), line[1]));
-                }
-            }
-            return transactions;
-        }
-        private void InputTransactionToFile(Transaction transaction)
-        {
-            string filePath = @"..\..\..\LogFiles\transactions.csv";
-            List<string> lines = File.ReadAllLines(filePath).ToList();
-            lines.Add(transaction.ToString());
-            File.WriteAllLines(filePath, lines);
-        }
-        /// <summary>
-        /// Constructs all the users in the system from the users.csv file.
-        /// </summary>
+        
         public void InputUsersFromFile()
         {
             string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -131,9 +99,6 @@ namespace OOP_Eksamen
             }
         }
 
-        /// <summary>
-        /// Constructs all the products in the system from the product.csv file.
-        /// </summary>
         public void InputProductFromFile()
         {
             string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -154,22 +119,47 @@ namespace OOP_Eksamen
                 }
             }
         }
+        private List<Transaction> TransactionList()
+        {
+            List<Transaction> transactions = new List<Transaction>();
+            string path = @"..\..\..\LogFiles\transactions.csv";
+            string[] lines = File.ReadAllLines(path);
+            string[] line;
+            for (int i = 1; i < lines.Length; i++)
+            {
+                line = lines[i].Split(';').ToArray();
+                if (line.Length == 5)
+                {
+                    transactions.Add(new BuyTransaction(Int32.Parse(line[0]), GetUserByUsername(line[2]), Int32.Parse(line[3]), GetProductByID(Int32.Parse(line[4])), line[1]));
+                }
+                else if (line.Length == 4)
+                {
+                    transactions.Add(new InsertCashTransaction(Int32.Parse(line[0]), GetUserByUsername(line[2]), Int32.Parse(line[3]), line[1]));
+                }
+            }
+            return transactions;
+        }
 
-        /// <summary>
-        /// Checks if the string value is equal to 1, if so return true, else false.
-        /// </summary>
-        /// <param name="value">The string.</param>
-        /// <returns></returns>
+        private void InputTransactionToFile(Transaction transaction)
+        {
+            string filePath = @"..\..\..\LogFiles\transactions.csv";
+            List<string> lines = File.ReadAllLines(filePath).ToList();
+            lines.Add(transaction.ToString());
+            File.WriteAllLines(filePath, lines);
+        }
         private bool CheckForTrueOrFalse(string value) => Int32.Parse(value) == 1 ? true : false;
 
-        /// <summary>
-        /// Replaces different html tags from a string with an empty string.
-        /// </summary>
-        /// <param name="value">The string.</param>
-        /// <returns></returns>
         private string RemoveHtmlTags(string value)
         {
-            return value.Replace("<h1>", "").Replace("<h2>", "").Replace("<h3>", "").Replace("<b>", "").Replace("</h1>", "").Replace("</h2>", "").Replace("</h3>", "").Replace("</b>", "");
+            int StartIndex;
+            int count;
+            while (value.Contains('<') || value.Contains('>'))
+            {
+                StartIndex = value.IndexOf('<');
+                count = value.IndexOf('>') - value.IndexOf('<') + 1;
+                value = value.Remove(StartIndex, count);
+            }
+            return value;
         }
     }
 }

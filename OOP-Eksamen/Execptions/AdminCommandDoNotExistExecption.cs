@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class AdminCommandDoNotExistExecption : Exception
+    public class AdminCommandDoNotExistExecption : Exception
     {
         public AdminCommandDoNotExistExecption()
         {

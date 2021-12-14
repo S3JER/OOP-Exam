@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class ProductNotActiveException : Exception
+    public class ProductNotActiveException : Exception
     {
         public ProductNotActiveException()
         {
