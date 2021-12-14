@@ -4,11 +4,10 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class InsufficientCreditsException : Exception
+    public class InsufficientCreditsException : Exception
     {
-        private User user;
-        private Product product;
-        private string v;
+        public User user;
+        public Product product;
 
         public InsufficientCreditsException()
         {
@@ -18,15 +17,14 @@ namespace OOP_Eksamen
         {
         }
 
-        public InsufficientCreditsException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        public InsufficientCreditsException(User user, Product product, string v)
+        public InsufficientCreditsException(User user, Product product)
         {
             this.user = user;
             this.product = product;
-            this.v = v;
+        }
+
+        public InsufficientCreditsException(string message, Exception innerException) : base(message, innerException)
+        {
         }
 
         protected InsufficientCreditsException(SerializationInfo info, StreamingContext context) : base(info, context)

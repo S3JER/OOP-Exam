@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace OOP_Eksamen
 {
-    class InsertCashTransaction : Transaction
+    public class InsertCashTransaction : Transaction
     {
-        public InsertCashTransaction(int id, User user, decimal amount) : base(id, user, amount)
+        public InsertCashTransaction(int id, User user, decimal amount, string date) : base(id, user, amount, date)
         {
         }
         public override string ToString()
         {
-            return $"{Amount} {User.Username} {Date} {Id}";
+            return $"{Id},{Date},{User.Username},{Amount}";
         }
         public override void Execute()
         {

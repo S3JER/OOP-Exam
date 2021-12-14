@@ -4,10 +4,17 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class NoUsersFoundException : Exception
+    public class NoUsersFoundException : Exception
     {
+        public int id;
+
         public NoUsersFoundException()
         {
+        }
+
+        public NoUsersFoundException(int id)
+        {
+            this.id = id;
         }
 
         public NoUsersFoundException(string message) : base(message)

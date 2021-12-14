@@ -4,14 +4,12 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class ProductNotFoundException : Exception
+    public class ProductNotFoundException : Exception
     {
-        public ProductNotFoundException()
+        public string id;
+        public ProductNotFoundException(string id)
         {
-        }
-
-        public ProductNotFoundException(string message) : base(message)
-        {
+            this.id = id;
         }
 
         public ProductNotFoundException(string message, Exception innerException) : base(message, innerException)

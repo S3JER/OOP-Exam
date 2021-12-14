@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class UserNotFoundException : Exception
+    public class UserNotFoundException : Exception
     {
         public UserNotFoundException()
         {

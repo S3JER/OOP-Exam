@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace OOP_Eksamen
 {
-    class BuyTransaction : Transaction
+    public class BuyTransaction : Transaction
     {
-        public BuyTransaction(int id, User user, decimal amount, Product product) : base(id, user, amount)
+        public BuyTransaction(int id, User user, decimal amount, Product product, string date) : base(id, user, amount, date)
         {
             Product = product;
             Amount = Product.Price;
@@ -14,7 +14,7 @@ namespace OOP_Eksamen
 
         public override string ToString()
         {
-            return $"{Amount} {User.Username} {Product.Name} {Date} {Id}";
+            return $"{Id},{Date},{User.Username},{Amount},{Product.Id}";
         }
         public override void Execute()
         {
@@ -32,7 +32,7 @@ namespace OOP_Eksamen
                     }
                     else
                     {
-                        throw new InsufficientCreditsException(User, Product, "The user do not have enough money to buy the product");
+                        throw new InsufficientCreditsException(User, Product);
                     }
                 }
             }

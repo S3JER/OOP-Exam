@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace OOP_Eksamen
 {
     internal class StregsystemCLI : IStregsystemUI
@@ -22,12 +24,12 @@ namespace OOP_Eksamen
 
         public void DisplayAdminCommandNotFoundMessage(string adminCommand)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"The command {adminCommand} do not exist");
         }
 
         public void DisplayGeneralError(string errorString)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(errorString);
         }
 
         public void DisplayInsufficientCash(User user, Product product)
@@ -37,29 +39,35 @@ namespace OOP_Eksamen
 
         public void DisplayProductNotFound(string product)
         {
-            Console.WriteLine($"The product: {product} do not exist.");
+            Console.WriteLine($"The product id: {product} do not exist.");
         }
 
         public void DisplayTooManyArgumentsError(string command)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"To manny arguments: {command}");
         }
 
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
-            transaction.Execute();
             Console.WriteLine($"{transaction.User} {transaction.Product.Name}");
         }
 
-        public void DisplayUserBuysProduct(int count, BuyTransaction transaction)
+        public void DisplayUserBuysProduct(int count, List<BuyTransaction> transactions)
         {
-            decimal value = transaction.Amount*(decimal)count;
-            Console.WriteLine($"{transaction.User} {transaction.Product.Name} {count}");
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine($"{transactions[i].User} {transactions[i].Product.Name}");
+            }
         }
 
         public void DisplayUserInfo(User user)
         {
-            Console.WriteLine($"{user.Firstname} {user.Lastname} {user.Email} {user.Balance}");
+            List<Transaction> transactions = stregsystem.GetTransactions(user, 5);
+            foreach (Transaction transaction in transactions)
+            {
+                Console.WriteLine(transaction);
+            }
+            Console.WriteLine(user.ToString() + $" {user.Balance}");
         }
 
         public void DisplayUserNotFound(string username)
@@ -67,14 +75,52 @@ namespace OOP_Eksamen
             Console.WriteLine($"User [{username}] not found!");
         }
 
+        public void DisplayBalanceWarning(User user, decimal balance)
+        {
+            Console.WriteLine("Balance notification: " + user.ToString() + " balance: " + balance.ToString());
+        }
+
         public void Start()
         {
             Running = true;
+            DisplayProducts();
             while (Running)
             {
-                    string command = Console.ReadLine();
+                string command = Console.ReadLine();
+                DisplayProducts();
                 CommandEvent.Invoke(command);
             }
+        }
+
+        private void CreateTable()
+        {
+            Console.WriteLine("| Id  |               Product                  | Price | ");
+            CreateLine();
+            foreach (Product product in stregsystem.ActiveProducts)
+            {
+                string id = product.Id.ToString();
+                string productname = product.Name.ToString();
+                string price = product.Price.ToString();
+                Console.Write("|");
+                Console.Write(id.PadRight(5));
+                Console.Write("|");
+                Console.Write(productname.PadRight(40));
+                Console.Write("|");
+                Console.Write(price.PadRight(7));
+                Console.WriteLine("|");
+                CreateLine();
+            }
+        }
+
+        private void CreateLine()
+        {
+            Console.WriteLine("|-----|----------------------------------------|-------|");
+        }
+
+        public void DisplayProducts()
+        {
+            Console.Clear();
+            CreateTable();
         }
     }
 }
