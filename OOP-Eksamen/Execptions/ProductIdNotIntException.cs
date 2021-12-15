@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace OOP_Eksamen
 {
     [Serializable]
-    internal class ProductIdNotIntException : Exception
+    public class ProductIdNotIntException : Exception
     {
         public ProductIdNotIntException()
         {

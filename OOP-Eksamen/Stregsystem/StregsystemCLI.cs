@@ -71,7 +71,7 @@ namespace OOP_Eksamen
             Console.WriteLine();
             if(user.Balance < 50)
             {
-                Console.WriteLine("Your balance are under 50 DKK.");
+                Console.WriteLine("Your balance is under 50 DKK.");
             }
             Console.WriteLine("Your information: " + user + $" balance:{user.Balance}");
         }
@@ -100,7 +100,6 @@ namespace OOP_Eksamen
 
         private void CreateTable()
         {
-            Console.WriteLine("You can buy with two different methods: ");
             Console.WriteLine("| Id  |               Product                  | Price | ");
             CreateLine();
             foreach (Product product in stregsystem.ActiveProducts)
